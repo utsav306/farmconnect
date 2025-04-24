@@ -109,7 +109,7 @@ export default function Checkout() {
     if (!cart || !cart.items || cart.items.length === 0) return 0;
 
     return cart.items.reduce((total, item) => {
-      return total + item.product.price * item.quantity;
+      return total + item.price * item.quantity;
     }, 0);
   };
 
@@ -238,10 +238,10 @@ export default function Checkout() {
               <View className="ml-3 flex-1 justify-center">
                 <Text className="font-medium">{item.product.name}</Text>
                 <Text className="text-gray-500">
-                  ₹{item.product.price}/{item.product.unit} × {item.quantity}
+                  ₹{item.price}/{item.product.unit} × {item.quantity}
                 </Text>
                 <Text className="font-bold text-[#2E7D32]">
-                  ₹{item.product.price * item.quantity}
+                  ₹{(item.price * item.quantity).toFixed(2)}
                 </Text>
               </View>
             </View>

@@ -189,26 +189,103 @@ export default function FarmerProductList() {
     setDeleteConfirmModal(true);
   };
 
-  const handleDelete = () => {
-    // Here you would call your API to delete the product
-    console.log(`Deleting product ${productToDelete.id}`);
-    setDeleteConfirmModal(false);
-    setProductToDelete(null);
+  const handleDelete = async () => {
+    try {
+      setLoading(true);
+      console.log(`Deleting product ${productToDelete.id}`);
 
-    // After successful deletion, re-fetch products
-    fetchProducts();
+      const response = await productApi.deleteProduct(productToDelete.id);
+
+      if (response.ok && response.data.success) {
+        console.log(
+          `Product ${productToDelete.id} successfully deleted from database`,
+        );
+
+        // Remove the product from the local state to immediately update the UI
+        setProducts(
+          products.filter((product) => product.id !== productToDelete.id),
+        );
+
+        Alert.alert("Success", "Product deleted successfully.");
+      } else {
+        console.error("Failed to delete product:", response.data);
+        Alert.alert(
+          "Error",
+          response.data?.message ||
+            response.data?.error ||
+            "Failed to delete product",
+        );
+      }
+    } catch (error) {
+      console.error("Error deleting product:", error);
+      Alert.alert(
+        "Error",
+        "An error occurred while deleting the product. Please try again.",
+      );
+    } finally {
+      setLoading(false);
+      setDeleteConfirmModal(false);
+      setProductToDelete(null);
+    }
   };
 
-  const handleMarkSoldOut = (productId) => {
-    // Here you would call your API to update the product status
-    console.log(`Marking product ${productId} as sold out`);
+  const handleMarkSoldOut = async (productId) => {
+    try {
+      setLoading(true);
+      console.log(`Marking product ${productId} as sold out`);
 
-    // After successful update, re-fetch products
-    fetchProducts();
+      // Find the product data
+      const productToUpdate = products.find((prod) => prod.id === productId);
+
+      if (!productToUpdate) {
+        Alert.alert("Error", "Product not found");
+        return;
+      }
+
+      // Update only the stock to 0
+      const updatedProductData = {
+        name: productToUpdate.name,
+        price: productToUpdate.price,
+        stock: 0,
+        description: productToUpdate.description,
+        image: productToUpdate.image,
+        category: productToUpdate.category,
+        unit: productToUpdate.unit,
+        isActive: productToUpdate.status !== "draft",
+      };
+
+      const response = await productApi.updateProduct(
+        productId,
+        updatedProductData,
+      );
+
+      if (response.ok && response.data.success) {
+        Alert.alert("Success", "Product marked as sold out");
+        // After successful update, re-fetch products
+        fetchProducts();
+      } else {
+        console.error("Failed to update product:", response.data);
+        Alert.alert(
+          "Error",
+          response.data?.message ||
+            response.data?.error ||
+            "Failed to update product",
+        );
+      }
+    } catch (error) {
+      console.error("Error updating product:", error);
+      Alert.alert(
+        "Error",
+        "An error occurred while updating the product. Please try again.",
+      );
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleEditProduct = (productId) => {
-    // Navigate to edit product screen
+    console.log(`Editing product ${productId}`);
+    // Navigate to edit product screen with the product ID
     router.push({
       pathname: "/(farmer)/add-product",
       params: { id: productId },
@@ -677,42 +754,46 @@ export default function FarmerProductList() {
         animationType="fade"
         onRequestClose={() => setDeleteConfirmModal(false)}
       >
-        <View className="flex-1 bg-black/50 justify-center items-center px-4">
-          <View className="bg-white rounded-2xl p-6 w-full max-w-sm">
-            <View className="items-center mb-4">
-              <View className="w-14 h-14 rounded-full bg-red-100 items-center justify-center mb-2">
-                <MaterialCommunityIcons
-                  name="delete-alert"
-                  size={30}
-                  color="#F44336"
-                />
-              </View>
-              <Text className="text-xl font-bold text-gray-800">
-                Delete Product
-              </Text>
-            </View>
-
-            <Text className="text-gray-600 text-center mb-4">
+        <View className="flex-1 justify-center items-center bg-black/50">
+          <View className="bg-white rounded-xl p-6 w-5/6 max-w-sm">
+            <MaterialCommunityIcons
+              name="alert-circle-outline"
+              size={50}
+              color="#F44336"
+              style={{ alignSelf: "center", marginBottom: 10 }}
+            />
+            <Text className="text-xl font-bold text-center mb-4">
+              Delete Product
+            </Text>
+            <Text className="text-center text-gray-600 mb-6">
               Are you sure you want to delete "{productToDelete?.name}"? This
               action cannot be undone.
             </Text>
-
-            <View className="flex-row space-x-3">
+            <View className="flex-row justify-between">
               <TouchableOpacity
-                className="flex-1 py-3 rounded-xl bg-gray-100"
-                onPress={() => setDeleteConfirmModal(false)}
+                className="flex-1 bg-gray-200 py-3 rounded-lg mr-2"
+                onPress={() => {
+                  setDeleteConfirmModal(false);
+                  setProductToDelete(null);
+                }}
+                disabled={loading}
               >
                 <Text className="text-gray-700 font-medium text-center">
                   Cancel
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity
-                className="flex-1 py-3 rounded-xl bg-red-600"
+                className="flex-1 bg-red-500 py-3 rounded-lg ml-2"
                 onPress={handleDelete}
+                disabled={loading}
               >
-                <Text className="text-white font-medium text-center">
-                  Delete
-                </Text>
+                {loading ? (
+                  <ActivityIndicator size="small" color="white" />
+                ) : (
+                  <Text className="text-white font-medium text-center">
+                    Delete
+                  </Text>
+                )}
               </TouchableOpacity>
             </View>
           </View>

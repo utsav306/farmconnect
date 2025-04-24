@@ -18,7 +18,6 @@ export default function Register() {
   const [userType, setUserType] = useState<"customer" | "farmer">("customer");
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
   const [location, setLocation] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -135,7 +134,9 @@ export default function Register() {
               />
               <Text
                 className={`ml-2 font-medium ${
-                  userType === "customer" ? "text-[#2E7D32]" : "text-white"
+                  userType === "customer"
+                    ? "text-[#2E7D32] font-bold"
+                    : "text-black font-bold"
                 }`}
               >
                 Customer
@@ -154,7 +155,9 @@ export default function Register() {
               />
               <Text
                 className={`ml-2 font-medium ${
-                  userType === "farmer" ? "text-[#2E7D32]" : "text-white"
+                  userType === "farmer"
+                    ? "text-[#2E7D32] font-bold"
+                    : "text-black font-bold"
                 }`}
               >
                 Farmer
@@ -210,26 +213,6 @@ export default function Register() {
               </View>
 
               <View>
-                <Text className="text-gray-700 font-medium mb-1">
-                  Phone Number
-                </Text>
-                <View className="flex-row items-center bg-gray-50 rounded-xl px-4 py-3">
-                  <MaterialCommunityIcons
-                    name="phone"
-                    size={20}
-                    color="#2E7D32"
-                  />
-                  <TextInput
-                    className="flex-1 ml-2"
-                    placeholder="Enter your phone number"
-                    value={phone}
-                    onChangeText={setPhone}
-                    keyboardType="phone-pad"
-                  />
-                </View>
-              </View>
-
-              <View>
                 <Text className="text-gray-700 font-medium mb-1">Location</Text>
                 <View className="flex-row items-center bg-gray-50 rounded-xl px-4 py-3">
                   <MaterialCommunityIcons
@@ -256,10 +239,10 @@ export default function Register() {
                   />
                   <TextInput
                     className="flex-1 ml-2"
-                    placeholder="Create a password"
+                    placeholder="Enter your password"
+                    secureTextEntry
                     value={password}
                     onChangeText={setPassword}
-                    secureTextEntry
                   />
                 </View>
               </View>
@@ -277,37 +260,36 @@ export default function Register() {
                   <TextInput
                     className="flex-1 ml-2"
                     placeholder="Confirm your password"
+                    secureTextEntry
                     value={confirmPassword}
                     onChangeText={setConfirmPassword}
-                    secureTextEntry
                   />
                 </View>
               </View>
 
               <Button
-                variant="primary"
-                size="lg"
-                className="mt-4"
                 onPress={handleRegister}
                 disabled={isLoading}
+                className="bg-[#2E7D32] py-4 rounded-xl mt-4"
               >
                 {isLoading ? (
-                  <ActivityIndicator color="#FFFFFF" />
+                  <ActivityIndicator color="#ffffff" />
                 ) : (
-                  "Create Account"
+                  <Text className="text-white text-center font-semibold">
+                    Create Account
+                  </Text>
                 )}
               </Button>
-            </View>
-          </View>
 
-          {/* Login Link */}
-          <View className="flex-row justify-center mt-8">
-            <Text className="text-gray-600">Already have an account? </Text>
-            <Link href="/login" asChild>
-              <TouchableOpacity>
-                <Text className="text-[#2E7D32] font-medium">Sign In</Text>
-              </TouchableOpacity>
-            </Link>
+              <View className="flex-row justify-center mt-4">
+                <Text className="text-gray-600">Already have an account? </Text>
+                <Link href="/(auth)/login" asChild>
+                  <TouchableOpacity>
+                    <Text className="text-[#2E7D32] font-medium">Sign in</Text>
+                  </TouchableOpacity>
+                </Link>
+              </View>
+            </View>
           </View>
         </View>
       </View>

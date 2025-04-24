@@ -18,6 +18,26 @@ interface ApiResponse<T> {
   ok: boolean;
 }
 
+// Define common response types
+interface ApiSuccessResponse {
+  success: boolean;
+  message?: string;
+  error?: string;
+}
+
+interface ProductResponse extends ApiSuccessResponse {
+  product?: any;
+}
+
+interface ProductsResponse extends ApiSuccessResponse {
+  products?: any[];
+  totalProducts?: number;
+}
+
+interface DeleteResponse extends ApiSuccessResponse {
+  message: string;
+}
+
 export async function apiRequest<T>(
   endpoint: string,
   options: RequestOptions = {},
@@ -183,75 +203,70 @@ export const cartApi = {
 export const productApi = {
   // Get all products
   getAllProducts: (params = {}) =>
-    apiRequest<{ success: boolean; products: any[]; totalProducts: number }>(
-      "/products",
-      {
-        method: "GET",
-      },
-    ),
+    apiRequest<ProductsResponse>("/products", {
+      method: "GET",
+    }),
 
   // Get product by ID
   getProductById: (productId: string) =>
-    apiRequest<{ success: boolean; product: any }>(`/products/${productId}`, {
+    apiRequest<ProductResponse>(`/products/${productId}`, {
       method: "GET",
     }),
 
   // Get products by category
   getProductsByCategory: (category: string) =>
-    apiRequest<{ success: boolean; products: any[]; totalProducts: number }>(
-      `/products?category=${category}`,
-      {
-        method: "GET",
-      },
-    ),
+    apiRequest<ProductsResponse>(`/products?category=${category}`, {
+      method: "GET",
+    }),
 
   // Get products for the authenticated farmer (more reliable)
   getMyProducts: () =>
-    apiRequest<{ success: boolean; products: any[] }>("/products/my-products", {
+    apiRequest<ProductsResponse>(`/products/my-products?_=${Date.now()}`, {
       method: "GET",
+      headers: {
+        "Cache-Control": "no-cache, no-store, must-revalidate",
+        Pragma: "no-cache",
+        Expires: "0",
+      },
     }),
 
   // Get products by farmer ID
   getProductsByFarmer: (farmerId: string) =>
-    apiRequest<{ success: boolean; products: any[] }>(
-      `/products/farmer/${farmerId}`,
-      {
-        method: "GET",
-      },
-    ),
+    apiRequest<ProductsResponse>(`/products/farmer/${farmerId}`, {
+      method: "GET",
+    }),
 
   // Create a new product
   createProduct: (productData: any) =>
-    apiRequest<{ success: boolean; product: any }>("/products", {
+    apiRequest<ProductResponse>("/products", {
       method: "POST",
       body: JSON.stringify(productData),
     }),
 
   // Test endpoint for creating a product (bypasses some auth checks)
   testCreateProduct: (farmerId: string, productData: any) =>
-    apiRequest<{ success: boolean; product: any }>(
-      `/products/test-create/${farmerId}`,
-      {
-        method: "POST",
-        body: JSON.stringify(productData),
-      },
-    ),
+    apiRequest<ProductResponse>(`/products/test-create/${farmerId}`, {
+      method: "POST",
+      body: JSON.stringify(productData),
+    }),
 
   // Update an existing product
   updateProduct: (productId: string, productData: any) =>
-    apiRequest<{ success: boolean; product: any }>(`/products/${productId}`, {
+    apiRequest<ProductResponse>(`/products/${productId}`, {
       method: "PUT",
       body: JSON.stringify(productData),
     }),
 
   // Delete a product
   deleteProduct: (productId: string) =>
-    apiRequest<{ success: boolean; message: string }>(
-      `/products/${productId}`,
-      {
-        method: "DELETE",
+    apiRequest<DeleteResponse>(`/products/${productId}?_=${Date.now()}`, {
+      method: "DELETE",
+      headers: {
+        "Cache-Control": "no-cache, no-store, must-revalidate",
+        Pragma: "no-cache",
+        Expires: "0",
       },
-    ),
+    }),
 };
 
 // Order API endpoints

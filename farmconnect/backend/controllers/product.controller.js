@@ -245,9 +245,13 @@ exports.updateProduct = async (req, res) => {
 // Delete a product
 exports.deleteProduct = async (req, res) => {
   try {
+    const productId = req.params.id;
+    console.log(`Attempting to delete product with ID: ${productId}`);
+
     // Check if product exists
-    const product = await Product.findById(req.params.id);
+    const product = await Product.findById(productId);
     if (!product) {
+      console.log(`Product ${productId} not found`);
       return res.status(404).json({
         success: false,
         message: "Product not found",
@@ -256,22 +260,53 @@ exports.deleteProduct = async (req, res) => {
 
     // Check if user is the farmer who created the product
     if (product.farmer.toString() !== req.user._id.toString()) {
+      console.log(`Unauthorized deletion attempt by user ${req.user._id}`);
       return res.status(403).json({
         success: false,
         message: "You are not authorized to delete this product",
       });
     }
 
-    // Soft delete by setting isActive to false
-    const deletedProduct = await Product.findByIdAndUpdate(
-      req.params.id,
-      { isActive: false },
-      { new: true },
+    // Hard delete with write concern for durability
+    const deleteResult = await Product.deleteOne(
+      { _id: productId },
+      { writeConcern: { w: "majority", j: true } },
+    );
+
+    console.log(`Delete result: ${JSON.stringify(deleteResult)}`);
+
+    // Verify the product is truly deleted
+    const verifyDeletion = await Product.findById(productId);
+    if (verifyDeletion) {
+      console.log(
+        `WARNING: Product ${productId} still exists after deletion attempt`,
+      );
+      // Try one more time with findByIdAndDelete
+      await Product.findByIdAndDelete(productId);
+
+      // Verify again
+      const secondVerify = await Product.findById(productId);
+      if (secondVerify) {
+        console.log(
+          `ERROR: Product ${productId} still exists after second deletion attempt`,
+        );
+        return res.status(500).json({
+          success: false,
+          message: "Failed to delete product - please try again",
+          error: "Product could not be removed from database",
+        });
+      }
+    }
+
+    console.log(
+      `Product ${productId} has been permanently deleted from the database`,
     );
 
     res.status(200).json({
       success: true,
       message: "Product deleted successfully",
+      deleted: true,
+      productId: productId,
     });
   } catch (error) {
     console.error("Product deletion error:", error);

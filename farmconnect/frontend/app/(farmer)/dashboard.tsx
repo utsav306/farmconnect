@@ -492,7 +492,7 @@ export default function FarmerDashboard() {
             </View>
 
             {/* Popular Products */}
-            <View className="mt-6">
+            {/* <View className="mt-6">
               <Text className="text-xl font-bold text-gray-800 mb-4">
                 Popular Products
               </Text>
@@ -515,7 +515,7 @@ export default function FarmerDashboard() {
                   <Text className="text-gray-500">No popular products yet</Text>
                 </View>
               )}
-            </View>
+            </View> */}
           </View>
         )}
       </ScrollView>

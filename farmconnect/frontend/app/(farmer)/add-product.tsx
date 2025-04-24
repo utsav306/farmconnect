@@ -142,12 +142,30 @@ export default function AddProduct() {
         isActive: true,
       };
 
-      console.log("Submitting product data:", JSON.stringify(productData));
+      console.log(
+        `${isEditMode ? "Updating" : "Creating"} product:`,
+        JSON.stringify(productData),
+      );
 
       let response;
 
       if (isEditMode) {
+        console.log(`Updating product with ID: ${productId}`);
         response = await productApi.updateProduct(productId, productData);
+
+        if (!response.ok) {
+          throw new Error(
+            response.data?.message ||
+              response.data?.error ||
+              "Failed to update product",
+          );
+        }
+
+        Alert.alert(
+          "Product Updated",
+          "Your product has been updated successfully!",
+          [{ text: "OK", onPress: () => router.back() }],
+        );
       } else {
         // Try creating the product normally first
         response = await productApi.createProduct(productData);
@@ -157,38 +175,43 @@ export default function AddProduct() {
           // If normal creation fails, try the test endpoint directly
           try {
             // Use the test endpoint that bypasses some auth checks
-            const testEndpoint = `/products/test-create/${user._id}`;
-            const testResponse = await productApi.testCreateProduct(
+            response = await productApi.testCreateProduct(
               user._id,
               productData,
             );
-            response = testResponse;
+
+            if (!response.ok) {
+              throw new Error(
+                response.data?.message ||
+                  response.data?.error ||
+                  "Failed to create product",
+              );
+            }
           } catch (testError) {
             console.error("Test endpoint error:", testError);
+            throw testError;
           }
         }
+
+        Alert.alert(
+          "Product Added",
+          "Your product has been added successfully!",
+          [{ text: "OK", onPress: () => router.back() }],
+        );
       }
 
       console.log("Product API response:", JSON.stringify(response));
-
-      if (response.ok && response.data.success) {
-        Alert.alert(
-          isEditMode ? "Product Updated" : "Product Added",
-          isEditMode
-            ? "Your product has been updated successfully!"
-            : "Your product has been added successfully!",
-          [{ text: "OK", onPress: () => router.back() }],
-        );
-      } else {
-        const errorMsg = response.data?.message || "Failed to save product";
-        console.error("Product save error:", errorMsg, response.data);
-        Alert.alert("Error", errorMsg);
-      }
     } catch (error) {
-      console.error("Error saving product:", error);
+      console.error(
+        `Error ${isEditMode ? "updating" : "creating"} product:`,
+        error,
+      );
       Alert.alert(
         "Error",
-        "An error occurred while saving your product. Please check your connection and try again.",
+        error.message ||
+          `An error occurred while ${
+            isEditMode ? "updating" : "adding"
+          } your product. Please try again.`,
       );
     } finally {
       setLoading(false);
