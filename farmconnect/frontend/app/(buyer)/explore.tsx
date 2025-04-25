@@ -12,6 +12,17 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { productApi } from "../../lib/api";
 
+// Define the allowed icon types to fix TypeScript errors
+type MaterialCommunityIconName = React.ComponentProps<
+  typeof MaterialCommunityIcons
+>["name"];
+
+// Define the Category type
+type Category = {
+  name: string;
+  icon: MaterialCommunityIconName;
+};
+
 export default function ExplorePage() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -41,7 +52,7 @@ export default function ExplorePage() {
     fetchProducts();
   }, []);
 
-  const categories = [
+  const categories: Category[] = [
     { name: "Vegetables", icon: "food-apple" },
     { name: "Fruits", icon: "fruit-watermelon" },
     { name: "Grains", icon: "grain" },

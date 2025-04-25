@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "frontend",
+    "name": "FarmConnect",
     "slug": "frontend",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -15,7 +15,8 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.utsav306.frontend"
     },
     "web": {
       "bundler": "metro",
@@ -36,6 +37,19 @@
     ],
     "experiments": {
       "typedRoutes": true
-    }
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "a4765ed2-8108-43c4-909b-f699cbe0e9fc"
+      }
+    },
+    "runtimeVersion": "1.0.0",
+    "updates": {
+      "url": "https://u.expo.dev/a4765ed2-8108-43c4-909b-f699cbe0e9fc"
+    },
+    "owner": "utsav306"
   }
 }

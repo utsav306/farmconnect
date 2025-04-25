@@ -89,6 +89,7 @@ export default function BuyerLayout() {
           <Tabs.Screen name="checkout" options={{ href: null }} />
           <Tabs.Screen name="shipping-address" options={{ href: null }} />
           <Tabs.Screen name="payment" options={{ href: null }} />
+          <Tabs.Screen name="chat-detail" options={{ href: null }} />
         </Tabs>
       </View>
     </View>
