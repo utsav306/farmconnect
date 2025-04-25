@@ -382,7 +382,8 @@ export default function FarmerDashboard() {
                     AI Farming Features
                   </Text>
                   <Text className="text-sm text-gray-500">
-                    Crop disease detection & price forecasting
+                    Crop disease detection, price forecasting, trending crops &
+                    diversification options
                   </Text>
                 </View>
               </View>

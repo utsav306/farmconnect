@@ -2,6 +2,8 @@ import React from "react";
 import { View, Text, ScrollView, SafeAreaView, StyleSheet } from "react-native";
 import CropDiseaseDetection from "../../components/CropDiseaseDetection";
 import PriceForecasting from "../../components/PriceForecasting";
+import TrendingCrops from "../../components/TrendingCrops";
+import DiversificationOptions from "../../components/DiversificationOptions";
 
 export default function FeaturesScreen() {
   return (
@@ -20,6 +22,12 @@ export default function FeaturesScreen() {
 
           {/* Price Forecasting */}
           <PriceForecasting />
+
+          {/* Trending Crops */}
+          <TrendingCrops />
+
+          {/* Diversification Options */}
+          <DiversificationOptions />
         </View>
       </ScrollView>
     </SafeAreaView>
