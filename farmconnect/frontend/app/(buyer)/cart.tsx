@@ -108,23 +108,26 @@ export default function CartPage() {
   // Calculate total
   const cartTotal = () => {
     if (!cart || !cart.items || cart.items.length === 0) return 0;
-    
+
     return cart.items.reduce((total, item) => {
-      return total + (item.price * item.quantity);
+      return total + item.price * item.quantity;
     }, 0);
   };
 
   const handleCheckout = async () => {
     try {
       // Store cart data in AsyncStorage to avoid URL parameter limitations
-      await AsyncStorage.setItem('cartData', JSON.stringify({
-        cartId: cart._id,
-        items: cart.items,
-        subtotal: cartTotal(),
-        deliveryFee: 40,
-        total: cartTotal() + 40
-      }));
-      
+      await AsyncStorage.setItem(
+        "cartData",
+        JSON.stringify({
+          cartId: cart?._id,
+          items: cart.items,
+          subtotal: cartTotal(),
+          deliveryFee: 40,
+          total: cartTotal() + 40,
+        }),
+      );
+
       // Navigate to checkout
       router.push("/(buyer)/checkout");
     } catch (error) {
@@ -148,7 +151,9 @@ export default function CartPage() {
       <SafeAreaView style={{ flex: 1, backgroundColor: "#f5f5f5" }}>
         <View className="flex-1 justify-center items-center p-4">
           <MaterialCommunityIcons name="cart-off" size={48} color="#F44336" />
-          <Text className="mt-4 text-lg text-center text-gray-800">{error}</Text>
+          <Text className="mt-4 text-lg text-center text-gray-800">
+            {error}
+          </Text>
           <TouchableOpacity
             className="mt-6 bg-[#2E7D32] px-6 py-3 rounded-full"
             onPress={fetchCart}
@@ -201,11 +206,11 @@ export default function CartPage() {
         >
           {cart.items.map((item) => (
             <View
-              key={item.product._id}
+              key={item.product?._id}
               className="bg-white rounded-lg p-4 mb-4 flex-row shadow-sm"
             >
               <Image
-                source={{ uri: item.product.image }}
+                source={{ uri: item.product?.image }}
                 className="w-20 h-20 rounded-lg"
                 resizeMode="cover"
               />
@@ -213,13 +218,13 @@ export default function CartPage() {
               <View className="flex-1 ml-4">
                 <View className="flex-row justify-between">
                   <Text className="font-bold text-[#2E7D32]">
-                    {item.product.name}
+                    {item.product?.name}
                   </Text>
-                  {updatingItemId === item.product._id ? (
+                  {updatingItemId === item.product?._id ? (
                     <ActivityIndicator size="small" color="#2E7D32" />
                   ) : (
                     <TouchableOpacity
-                      onPress={() => removeItem(item.product._id)}
+                      onPress={() => removeItem(item.product?._id)}
                       className="p-1"
                     >
                       <MaterialCommunityIcons
@@ -241,16 +246,16 @@ export default function CartPage() {
                 <View className="flex-row items-center mt-2">
                   <TouchableOpacity
                     onPress={() =>
-                      updateQuantity(item.product._id, item.quantity - 1)
+                      updateQuantity(item.product?._id, item.quantity - 1)
                     }
                     className="bg-gray-100 w-8 h-8 rounded-full items-center justify-center"
-                    disabled={updatingItemId === item.product._id}
+                    disabled={updatingItemId === item.product?._id}
                   >
                     <MaterialCommunityIcons
                       name="minus"
                       size={16}
                       color={
-                        updatingItemId === item.product._id ? "#ccc" : "#2E7D32"
+                        updatingItemId === item.product?._id ? "#ccc" : "#2E7D32"
                       }
                     />
                   </TouchableOpacity>
@@ -259,16 +264,16 @@ export default function CartPage() {
 
                   <TouchableOpacity
                     onPress={() =>
-                      updateQuantity(item.product._id, item.quantity + 1)
+                      updateQuantity(item.product?._id, item.quantity + 1)
                     }
                     className="bg-gray-100 w-8 h-8 rounded-full items-center justify-center"
-                    disabled={updatingItemId === item.product._id}
+                    disabled={updatingItemId === item.product?._id}
                   >
                     <MaterialCommunityIcons
                       name="plus"
                       size={16}
                       color={
-                        updatingItemId === item.product._id ? "#ccc" : "#2E7D32"
+                        updatingItemId === item.product?._id ? "#ccc" : "#2E7D32"
                       }
                     />
                   </TouchableOpacity>
@@ -299,11 +304,7 @@ export default function CartPage() {
               </Text>
             </View>
 
-            <Button
-              variant="primary"
-              size="lg"
-              onPress={handleCheckout}
-            >
+            <Button variant="primary" size="lg" onPress={handleCheckout}>
               Proceed to Checkout
             </Button>
           </View>

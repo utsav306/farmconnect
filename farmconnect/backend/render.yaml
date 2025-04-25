@@ -1,0 +1,44 @@
+services:
+  - type: web
+    name: farmconnect-api
+    env: node
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        sync: false
+      - key: MONGODB_URI
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: JWT_EXPIRES_IN
+        value: 7d
+      - key: API_URL
+        fromService:
+          type: web
+          name: farmconnect-api
+          property: url
+        suffix: /api
+      - key: ANDROID_EMULATOR_URL
+        fromService:
+          type: web
+          name: farmconnect-api
+          property: url
+        suffix: /api
+      - key: IOS_SIMULATOR_URL
+        fromService:
+          type: web
+          name: farmconnect-api
+          property: url
+        suffix: /api
+      - key: LOCAL_NETWORK_URL
+        fromService:
+          type: web
+          name: farmconnect-api
+          property: url
+        suffix: /api
+      - key: GEMINI_API_KEY
+        sync: false
