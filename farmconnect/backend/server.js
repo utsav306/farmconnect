@@ -41,6 +41,10 @@ app.use(express.static("public"));
 app.use(morgan("dev"));
 
 // Routes
+app.get('/health', (req, res) => {
+  res.status(200).send('OK');
+});
+
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/cart", cartRoutes);
